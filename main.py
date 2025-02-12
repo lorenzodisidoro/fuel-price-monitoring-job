@@ -6,7 +6,8 @@ import sys
 import os 
 from io import StringIO 
 from google.cloud import firestore  
-from google.oauth2 import service_account  
+from google.oauth2 import service_account
+from datetime import datetime
 
 def download(csv_url):
     """
@@ -74,8 +75,9 @@ def save_to_firestore(json_data):
         
         credentials = service_account.Credentials.from_service_account_info(json.loads(credentials_json))
         db = firestore.Client(credentials=credentials)
-        
-        doc_ref = db.collection("fuel_data").document("latest")  
+        # Get the current date in YYYY-MM-DD format
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        doc_ref = db.collection("fuel_data").document(current_date)  
         doc_ref.set(json_data) 
         print("Data has been successfully saved to Firestore.")
     except Exception as e:
